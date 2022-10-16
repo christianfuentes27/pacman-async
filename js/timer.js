@@ -6,10 +6,6 @@ timer = {
             this.interval = null;
         }
 
-        getInterval() {
-            return this.interval;
-        }
-
         moveGhosts = () => {
             this.play.intervalGhosts();
             this.finish();

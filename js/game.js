@@ -42,10 +42,15 @@ game = {
             this.board.children[this.ghost2X].children[this.ghost2Y].innerHTML = 'A';
         }
 
-        // render() {
-        //     this.renderPacman();
-        //     this.renderGhosts();
-        // }
+        renderRoad(x, y) {
+            this.contentBoard[x][y] = 0;
+            this.board.children[x].children[y].innerHTML = 0;
+        }
+
+        render() {
+            this.renderPacman();
+            this.renderGhosts();
+        }
 
         setMap() {
             let fragment = document.createDocumentFragment();
@@ -66,29 +71,25 @@ game = {
             switch (e.key) {
                 case 'ArrowUp':
                     if (this.pacmanX != 0 && this.contentBoard[this.pacmanX - 1][this.pacmanY] == 0) {
-                        this.contentBoard[this.pacmanX][this.pacmanY] = 0;
-                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
+                        this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanX--;
                     }
                     break;
                 case 'ArrowRight':
                     if (this.pacmanY != this.maxValueY && this.contentBoard[this.pacmanX][this.pacmanY + 1] == 0) {
-                        this.contentBoard[this.pacmanX][this.pacmanY] = 0;
-                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
+                        this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanY++;
                     }
                     break;
                 case 'ArrowDown':
                     if (this.pacmanX != this.maxValueX && this.contentBoard[this.pacmanX + 1][this.pacmanY] == 0) {
-                        this.contentBoard[this.pacmanX][this.pacmanY] = 0;
-                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
+                        this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanX++;
                     }
                     break;
                 case 'ArrowLeft':
                     if (this.pacmanY != 0 && this.contentBoard[this.pacmanX][this.pacmanY - 1] == 0) {
-                        this.contentBoard[this.pacmanX][this.pacmanY] = 0;
-                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
+                        this.renderRoad(this.pacmanX, this.pacmanY);
                         this.pacmanY--;
                     }
                     break;
@@ -97,21 +98,13 @@ game = {
         }
 
         intervalGhosts() {
-            this.movePacman();
-            this.contentBoard[this.ghost1X][this.ghost1Y] = 0;
-            this.board.children[this.ghost1X].children[this.ghost1Y].innerHTML = 0;
-            let values1 = this.moveGhosts(this.ghost1X, this.ghost1Y);
-            this.ghost1X = values1[0];
-            this.ghost1Y = values1[1];
-            
-            this.contentBoard[this.ghost2X][this.ghost2Y] = 0;
-            this.board.children[this.ghost2X].children[this.ghost2Y].innerHTML = 0;
-            let values2 = this.moveGhosts(this.ghost2X, this.ghost2Y);
-            this.ghost2X = values2[0];
-            this.ghost2Y = values2[1];
+            this.renderRoad(this.ghost1X, this.ghost1Y);
+            [this.ghost1X, this.ghost1Y] = this.moveGhosts(this.ghost1X, this.ghost1Y);
 
-            this.renderPacman();
-            this.renderGhosts();
+            this.renderRoad(this.ghost2X, this.ghost2Y);
+            [this.ghost2X, this.ghost2Y] = this.moveGhosts(this.ghost2X, this.ghost2Y);
+
+            this.render();
         }
 
         movePacman() {
@@ -173,7 +166,7 @@ game = {
                 document.removeEventListener('keyup', this.movingPacman);
                 stop = true;
             }
-            
+
             return stop;
         }
 
@@ -183,8 +176,8 @@ game = {
 
         init() {
             this.setMap();
-            this.renderPacman();
-            this.renderGhosts();
+            this.render();
+            this.movePacman();
             this.restart();
         }
     }
