@@ -6,7 +6,6 @@ game = {
             this.lose = document.getElementById('lose');
             this.btn = document.querySelector('.btn');
             this.contentBoard = null;
-            this.able = true;
 
             this.pacmanX = 2;
             this.pacmanY = 8;
@@ -31,16 +30,24 @@ game = {
             this.maxValueY = this.contentBoard[0].length - 1;
         }
 
-        setPacman() {
+        renderPacman() {
             this.contentBoard[this.pacmanX][this.pacmanY] = 'X';
+            this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 'X';
         }
 
-        setGhosts() {
+        renderGhosts() {
             this.contentBoard[this.ghost1X][this.ghost1Y] = 'A';
             this.contentBoard[this.ghost2X][this.ghost2Y] = 'A';
+            this.board.children[this.ghost1X].children[this.ghost1Y].innerHTML = 'A';
+            this.board.children[this.ghost2X].children[this.ghost2Y].innerHTML = 'A';
         }
 
-        render() {
+        // render() {
+        //     this.renderPacman();
+        //     this.renderGhosts();
+        // }
+
+        setMap() {
             let fragment = document.createDocumentFragment();
             for (let i = 0; i < this.contentBoard.length; i++) {
                 let row = document.createElement('div');
@@ -60,40 +67,51 @@ game = {
                 case 'ArrowUp':
                     if (this.pacmanX != 0 && this.contentBoard[this.pacmanX - 1][this.pacmanY] == 0) {
                         this.contentBoard[this.pacmanX][this.pacmanY] = 0;
+                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
                         this.pacmanX--;
                     }
                     break;
                 case 'ArrowRight':
                     if (this.pacmanY != this.maxValueY && this.contentBoard[this.pacmanX][this.pacmanY + 1] == 0) {
                         this.contentBoard[this.pacmanX][this.pacmanY] = 0;
+                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
                         this.pacmanY++;
                     }
                     break;
                 case 'ArrowDown':
                     if (this.pacmanX != this.maxValueX && this.contentBoard[this.pacmanX + 1][this.pacmanY] == 0) {
                         this.contentBoard[this.pacmanX][this.pacmanY] = 0;
+                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
                         this.pacmanX++;
                     }
                     break;
                 case 'ArrowLeft':
                     if (this.pacmanY != 0 && this.contentBoard[this.pacmanX][this.pacmanY - 1] == 0) {
                         this.contentBoard[this.pacmanX][this.pacmanY] = 0;
+                        this.board.children[this.pacmanX].children[this.pacmanY].innerHTML = 0;
                         this.pacmanY--;
                     }
                     break;
             }
-            this.contentBoard[this.pacmanX][this.pacmanY] = 'X';
+            this.renderPacman();
+        }
 
+        intervalGhosts() {
+            this.movePacman();
+            this.contentBoard[this.ghost1X][this.ghost1Y] = 0;
+            this.board.children[this.ghost1X].children[this.ghost1Y].innerHTML = 0;
             let values1 = this.moveGhosts(this.ghost1X, this.ghost1Y);
             this.ghost1X = values1[0];
             this.ghost1Y = values1[1];
+            
+            this.contentBoard[this.ghost2X][this.ghost2Y] = 0;
+            this.board.children[this.ghost2X].children[this.ghost2Y].innerHTML = 0;
             let values2 = this.moveGhosts(this.ghost2X, this.ghost2Y);
             this.ghost2X = values2[0];
             this.ghost2Y = values2[1];
 
-            this.checkLose();
-            this.board.textContent = '';
-            this.render();
+            this.renderPacman();
+            this.renderGhosts();
         }
 
         movePacman() {
@@ -130,7 +148,7 @@ game = {
             if (y != this.maxValueY && this.contentBoard[x][y + 1] != 1 && this.contentBoard[x][y + 1] != 'A') options.push('right');
             if (x != this.maxValueX && this.contentBoard[x + 1][y] != 1 && this.contentBoard[x + 1][y] != 'A') options.push('down');
             if (y != 0 && this.contentBoard[x][y - 1] != 1 && this.contentBoard[x][y - 1] != 'A') options.push('left');
-            
+
             return options;
         }
 
@@ -149,10 +167,14 @@ game = {
         }
 
         checkLose() {
+            let stop = false;
             if (this.contentBoard[this.pacmanX][this.pacmanY] != 'X') {
                 this.lose.style.display = 'block';
                 document.removeEventListener('keyup', this.movingPacman);
+                stop = true;
             }
+            
+            return stop;
         }
 
         restart() {
@@ -160,10 +182,9 @@ game = {
         }
 
         init() {
-            this.setPacman();
-            this.setGhosts();
-            this.render();
-            this.movePacman();
+            this.setMap();
+            this.renderPacman();
+            this.renderGhosts();
             this.restart();
         }
     }
